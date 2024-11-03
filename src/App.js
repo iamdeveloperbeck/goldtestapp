@@ -1,24 +1,18 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+import Login from './components/Login';
+import AdminDashboard from './components/AdminDashboard';
+import AddCategory from './components/AddCategory';
+import TestList from './components/Testlist';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <Routes>
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/add-category" element={<AddCategory />} />
+        <Route path="/test-list" element={<TestList />} />
+      </Routes>
   );
 }
 
