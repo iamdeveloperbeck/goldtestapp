@@ -55,7 +55,7 @@ function Login() {
         </div>
         <button type='submit' className='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2'>Kirish</button>
       </form>
-      <button onClick={handleGoogleLogin} className='bg-red-500 text-white p-2 rounded mt-4'>
+      <button onClick={handleGoogleLogin} className='bg-red-500 text-white p-2 rounded mt-4 flex items-center gap-3'>
         <FaGoogle color='#fff' /> Google orqali kirish
       </button>
     </div>
