@@ -22,6 +22,7 @@ function TestList() {
     }
   }, [selectedCategory]);
 
+  // Existing fetch functions
   const fetchCategories = async () => {
     const querySnapshot = await getDocs(collection(db, 'categories'));
     const categoriesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -53,6 +54,7 @@ function TestList() {
     }
   };
 
+  // Existing handlers
   const handleEditClick = (testIndex, questionIndex, questionData) => {
     setEditingTestIndex(testIndex);
     setEditingQuestionIndex(questionIndex);
@@ -108,69 +110,119 @@ function TestList() {
   };
 
   return (
-    <div className='p-[20px]'>
-        <Link to='/admin' className='flex items-center gap-1 text-blue-600 font-medium mb-2 w-fit'><BiLogOutCircle /> Ortga qaytish</Link>
-      <h2 className='mb-4 text-3xl font-extrabold leading-none tracking-tight text-gray-900'>Yo'nalishlar</h2>
-      <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'>
-        <option value=''>Yo'nalishni tanlang</option>
-        {categories.map(category => (
-          <option key={category.id} value={category.id}>{category.name}</option>
-        ))}
-      </select>
-        <div className='w-full h-[2px] bg-gray-300 m-[20px_0]'></div>
-      <h3 className='mb-4 text-3xl font-extrabold leading-none tracking-tight text-gray-900'>Testlar ro'yxati</h3>
-      <ul>
-        {tests.map((test, testIndex) => (
-          <li key={testIndex} className='mb-4'>
-            <div className='font-semibold italic'>{test.title}</div>
-            {test.questions && test.questions.map((q, questionIndex) => (
-              <div key={questionIndex} className='ml-4'>
-                {editingTestIndex === testIndex && editingQuestionIndex === questionIndex ? (
-                  <div>
-                    <label className='block text-sm font-medium text-gray-900'>Savol nomi:</label>
-                    <input
-                      type='text'
-                      value={editedQuestionData.question}
-                      onChange={(e) => handleFieldChange('question', e.target.value)}
-                      placeholder="Savol"
-                      className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
-                    />
-                    <label className='block text-sm font-medium text-gray-900'>Variantlar:</label>
-                    {editedQuestionData.options.map((option, optionIndex) => (
-                      <input
-                        key={optionIndex}
-                        type='text'
-                        value={option}
-                        onChange={(e) => handleOptionChange(optionIndex, e.target.value)}
-                        placeholder={`Variant ${optionIndex + 1}`}
-                        className='bg-gray-50 border border-gray-300 mb-2 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
-                      />
-                    ))}
-                    <label className='block text-sm font-medium text-gray-900'>To'g'ri javob nomi:</label>
-                    <input
-                      type='text'
-                      value={editedQuestionData.correctAnswer}
-                      onChange={(e) => handleFieldChange('correctAnswer', e.target.value)}
-                      placeholder="To'g'ri javob"
-                      className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
-                    />
-                    <button onClick={handleSaveClick} className='text-white mt-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm sm:w-auto px-5 py-2.5 text-center'>Saqlash</button>
-                  </div>
-                ) : (
-                  <>
-                    <div className='flex items-center gap-2'>
-                        <span className='text-1xl font-bold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl'>{q.question}</span>
-                        <button onClick={() => handleEditClick(testIndex, questionIndex, q)} className='relative inline-flex items-center justify-center p-0.5 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white'>
-                            <span className='relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0'>O'zgartirish</span>
-                        </button>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="mb-1">
+          <Link 
+            to="/admin" 
+            className="inline-flex items-center text-blue-600 hover:text-blue-700 transition-colors mb-4"
+          >
+            <BiLogOutCircle className="w-5 h-5 mr-2" />
+            Ortga qaytish
+          </Link>
+        </div>
+
+        {/* Main Content */}
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          {/* Category Selector */}
+          <div className="p-6 border-b border-gray-100">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">Yo'nalishni tanlang</option>
+              {categories.map(category => (
+                <option key={category.id} value={category.id}>{category.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Tests List */}
+          <div className="p-6">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6">Testlar ro'yxati</h2>
+            <div className="space-y-6">
+              {tests.map((test, testIndex) => (
+                <div key={testIndex} className="bg-gray-50 rounded-xl p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">{test.title}</h3>
+                  {test.questions && test.questions.map((q, questionIndex) => (
+                    <div 
+                      key={questionIndex}
+                      className="bg-white rounded-lg p-4 mb-4 shadow-sm"
+                    >
+                      {editingTestIndex === testIndex && editingQuestionIndex === questionIndex ? (
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Savol nomi:
+                            </label>
+                            <input
+                              type="text"
+                              value={editedQuestionData.question}
+                              onChange={(e) => handleFieldChange('question', e.target.value)}
+                              className="w-full rounded-lg border-gray-300 shadow-md border p-[10px] focus:ring-blue-500 focus:border-blue-500"
+                              placeholder="Savol"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Variantlar:
+                            </label>
+                            <div className="space-y-2">
+                              {editedQuestionData.options.map((option, optionIndex) => (
+                                <input
+                                  key={optionIndex}
+                                  type="text"
+                                  value={option}
+                                  onChange={(e) => handleOptionChange(optionIndex, e.target.value)}
+                                  className="w-full rounded-lg border-gray-300 shadow-md border p-[10px] focus:ring-blue-500 focus:border-blue-500"
+                                  placeholder={`Variant ${optionIndex + 1}`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              To'g'ri javob:
+                            </label>
+                            <input
+                              type="text"
+                              value={editedQuestionData.correctAnswer}
+                              onChange={(e) => handleFieldChange('correctAnswer', e.target.value)}
+                              className="w-full rounded-lg border-gray-300 shadow-md border p-[10px] focus:ring-blue-500 focus:border-blue-500"
+                              placeholder="To'g'ri javob"
+                            />
+                          </div>
+
+                          <button
+                            onClick={handleSaveClick}
+                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                          >
+                            Saqlash
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-between">
+                          <p className="text-gray-900 font-medium">{q.question}</p>
+                          <button
+                            onClick={() => handleEditClick(testIndex, questionIndex, q)}
+                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                          >
+                            O'zgartirish
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  </>
-                )}
-              </div>
-            ))}
-          </li>
-        ))}
-      </ul>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
