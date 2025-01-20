@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../data/firebase';
-import { collection, addDoc, getDocs } from 'firebase/firestore';
+import { collection, addDoc, getDocs, doc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore';
 import { Link, useNavigate } from 'react-router-dom';
-import AddQuestions from './AddQuestions';
-
 import { BiLogOutCircle } from "react-icons/bi";
 
-function AddCategory() {
+function AddCategoryAndQuestions() {
   const [categoryName, setCategoryName] = useState('');
-  const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [question, setQuestion] = useState('');
+  const [options, setOptions] = useState(['', '', '', '']);
+  const [correctAnswer, setCorrectAnswer] = useState('');
+  const [testNumber, setTestNumber] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  useEffect(() => {
+    if (selectedCategory) {
+      fetchTestCount();
+    }
+  }, [selectedCategory]);
 
   const fetchCategories = async () => {
     const querySnapshot = await getDocs(collection(db, 'categories'));
@@ -21,49 +30,185 @@ function AddCategory() {
     setCategories(categoriesData);
   };
 
+  const fetchTestCount = async () => {
+    try {
+      const categoryRef = doc(db, 'categories', selectedCategory);
+      const categoryDoc = await getDoc(categoryRef);
+      if (categoryDoc.exists()) {
+        const tests = categoryDoc.data().tests || [];
+        setTestNumber(tests.length + 1);
+      }
+    } catch (error) {
+      console.error('Testlarni olishda xato:', error);
+    }
+  };
+
   const addCategory = async () => {
     try {
       const newCategory = { name: categoryName, tests: [] };
       await addDoc(collection(db, 'categories'), newCategory);
       setCategoryName('');
+      fetchCategories(); // Refresh categories list
     } catch (error) {
       console.error('Kategoriya qo\'shishda xato:', error);
     }
   };
 
+  const addQuestion = async () => {
+    if (!selectedCategory) {
+      alert("Kategoriya tanlanmadi.");
+      return;
+    }
+
+    const newQuestion = {
+      question,
+      options,
+      correctAnswer
+    };
+
+    try {
+      const categoryRef = doc(db, 'categories', selectedCategory);
+      await updateDoc(categoryRef, {
+        tests: arrayUnion({
+          title: `Test ${testNumber}`,
+          questions: [newQuestion]
+        })
+      });
+
+      setQuestion('');
+      setOptions(['', '', '', '']);
+      setCorrectAnswer('');
+      setTestNumber(testNumber + 1);
+    } catch (error) {
+      console.error('Savol qo\'shishda xato:', error);
+    }
+  };
+
   return (
-    <div className='p-[20px]'>
-        <Link to='/admin' className='flex items-center gap-1 text-blue-600 font-medium mb-2 w-fit'><BiLogOutCircle /> Ortga qaytish</Link>
-        <h2 className='mb-6 text-3xl font-extrabold text-gray-900'>Yo'nalishlar va savollar qo'shish</h2>
-        <div className='flex gap-8 items-start'>
-            <div className='flex justify-start items-end gap-2'>
-                <div>
-                    <label className='block text-sm font-medium text-gray-900'>Yo'nalish qo'shish:</label>
-                    <input
-                        type='text'
-                        placeholder="Yo'nalish nomi"
-                        value={categoryName}
-                        onChange={(e) => setCategoryName(e.target.value)}
-                        className='w-[250px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5'
-                    />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Back Button */}
+        <Link 
+          to="/admin" 
+          className="mb-8 inline-flex items-center text-blue-600 hover:text-blue-700 transition-colors"
+        >
+          <BiLogOutCircle className="w-5 h-5 mr-2" />
+          Ortga qaytish
+        </Link>
+
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div className="p-6 sm:p-8 bg-gradient-to-r from-blue-600 to-indigo-600">
+            <h1 className="text-2xl font-bold text-white">Yo'nalishlar va savollar qo'shish</h1>
+          </div>
+
+          <div className="p-6 sm:p-8 space-y-8">
+            {/* Add Category Section */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold text-gray-900">Yo'nalish qo'shish</h2>
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    placeholder="Yo'nalish nomi"
+                    value={categoryName}
+                    onChange={(e) => setCategoryName(e.target.value)}
+                    className="w-full rounded-lg border-gray-300 shadow-md border p-[10px] focus:border-blue-500 focus:ring-blue-500"
+                  />
                 </div>
-                <button onClick={addCategory} className='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center'>Qo'shish</button>
+                <button
+                  onClick={addCategory}
+                  className="px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Qo'shish
+                </button>
+              </div>
             </div>
-            <div className=''>
-                <h2 className='block text-sm font-medium text-gray-900 mb-[3px]'>Mavjud yo'nalishlar ro'yxati:</h2>
-                <ul className='flex gap-2'>
+
+            {/* Existing Categories */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold text-gray-900">Mavjud yo'nalishlar ro'yxati:</h2>
+              <div className="flex flex-wrap gap-2">
+                {categories.map((category) => (
+                  <span
+                    key={category.id}
+                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                  >
+                    {category.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Add Question Form */}
+            <div className="space-y-6">
+              <h2 className="text-xl font-semibold text-gray-900">Savol qo'shish:</h2>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Yo'nalishni tanlang:
+                  </label>
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="w-full rounded-lg border-gray-300 shadow-md border p-[10px] focus:border-blue-500 focus:ring-blue-500"
+                  >
+                    <option value="">Tanlang</option>
                     {categories.map(category => (
-                        <li key={category.id} className='border p-2 mb-2 block text-sm font-medium text-gray-900'>
-                            {category.name}
-                        </li>
+                      <option key={category.id} value={category.id}>{category.name}</option>
                     ))}
-                </ul>
+                  </select>
+                </div>
+
+                <div className="space-y-4">
+                  <textarea
+                    placeholder="Savol"
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
+                    rows={3}
+                    className="w-full rounded-lg border-gray-300 shadow-md border p-[10px] focus:border-blue-500 focus:ring-blue-500"
+                  />
+
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {options.map((option, index) => (
+                      <input
+                        key={index}
+                        type="text"
+                        placeholder={`Variant ${index + 1}`}
+                        value={option}
+                        onChange={(e) => {
+                          const newOptions = [...options];
+                          newOptions[index] = e.target.value;
+                          setOptions(newOptions);
+                        }}
+                        className="w-full rounded-lg border-gray-300 shadow-md border p-[10px] focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    ))}
+                  </div>
+
+                  <input
+                    type="text"
+                    placeholder="To'g'ri javob"
+                    value={correctAnswer}
+                    onChange={(e) => setCorrectAnswer(e.target.value)}
+                    className="w-full rounded-lg border-gray-300 shadow-md border p-[10px] focus:border-blue-500 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    onClick={addQuestion}
+                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    Qo'shish
+                  </button>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-        <div className='w-full h-[2px] bg-gray-300 m-[20px_0]'></div>
-        <AddQuestions />
+      </div>
     </div>
   );
 }
 
-export default AddCategory;
+export default AddCategoryAndQuestions;
