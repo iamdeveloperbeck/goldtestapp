@@ -87,14 +87,23 @@ function AddCategoryAndQuestions() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        {/* Back Button */}
-        <Link 
-          to="/admin" 
-          className="mb-8 inline-flex items-center text-blue-600 hover:text-blue-700 transition-colors"
-        >
-          <BiLogOutCircle className="w-5 h-5 mr-2" />
-          Ortga qaytish
-        </Link>
+        <div className="flex items-center justify-between">
+          {/* Back Button */}
+          <Link 
+            to="/admin" 
+            className="mb-8 inline-flex items-center text-blue-600 hover:text-blue-700 transition-colors"
+          >
+            <BiLogOutCircle className="w-5 h-5 mr-2" />
+            Ortga qaytish
+          </Link>
+          <Link 
+            to="/test-list" 
+            className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors"
+          >
+              <FaClipboardList className="w-4 h-4" />
+              <span>Testlar ro'yxati</span>
+          </Link>
+        </div>
 
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           <div className="p-6 sm:p-8 bg-gradient-to-r from-blue-600 to-indigo-600">
