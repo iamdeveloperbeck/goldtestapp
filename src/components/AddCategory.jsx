@@ -3,6 +3,7 @@ import { db } from '../data/firebase';
 import { collection, addDoc, getDocs, doc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore';
 import { Link, useNavigate } from 'react-router-dom';
 import { BiLogOutCircle } from "react-icons/bi";
+import { FaFolderPlus, FaClipboardList, FaDownload } from "react-icons/fa";
 
 function AddCategoryAndQuestions() {
   const [categoryName, setCategoryName] = useState('');
