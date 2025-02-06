@@ -99,7 +99,7 @@ function AddCategoryAndQuestions() {
           </Link>
           <Link 
             to="/test-list" 
-            className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors"
+            className="flex items-center space-x-2 mb-8 text-blue-600 hover:text-blue-700 transition-colors"
           >
               <FaClipboardList className="w-4 h-4" />
               <span>Testlar ro'yxati</span>
