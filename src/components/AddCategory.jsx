@@ -3,11 +3,13 @@ import { db } from '../data/firebase';
 import { collection, addDoc, getDocs, doc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore';
 import { Link, useNavigate } from 'react-router-dom';
 import { BiLogOutCircle } from "react-icons/bi";
-import { FaClipboardList } from "react-icons/fa";
+import { FaClipboardList, FaEdit } from "react-icons/fa";
 
 function AddCategoryAndQuestions() {
   const [categoryName, setCategoryName] = useState('');
   const [categories, setCategories] = useState([]);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [newCategoryName, setNewCategoryName] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [question, setQuestion] = useState('');
   const [options, setOptions] = useState(['', '', '', '']);
@@ -29,6 +31,18 @@ function AddCategoryAndQuestions() {
     const querySnapshot = await getDocs(collection(db, 'categories'));
     const categoriesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     setCategories(categoriesData);
+  };
+
+  const handleEditClick = (category) => {
+    setEditingCategory(category.id);
+    setNewCategoryName(category.name);
+  };
+
+  const handleSave = async (categoryId) => {
+    const categoryRef = doc(db, 'categories', categoryId);
+    await updateDoc(categoryRef, { name: newCategoryName });
+    setEditingCategory(null);
+    fetchCategories();
   };
 
   const fetchTestCount = async () => {
@@ -139,12 +153,26 @@ function AddCategoryAndQuestions() {
               <h2 className="text-xl font-semibold text-gray-900">Mavjud yo'nalishlar ro'yxati:</h2>
               <div className="flex flex-wrap gap-2">
                 {categories.map((category) => (
-                  <span
-                    key={category.id}
-                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
-                  >
-                    {category.name}
-                  </span>
+                  <div key={category.id} className="relative group">
+                    {editingCategory === category.id ? (
+                      <input
+                        type="text"
+                        value={newCategoryName}
+                        onChange={(e) => setNewCategoryName(e.target.value)}
+                        className="px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800 focus:outline-none"
+                      />
+                    ) : (
+                      <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                        {category.name}
+                      </span>
+                    )}
+                    <button
+                      className="absolute right-[-10px] top-[-5px] opacity-0 group-hover:opacity-100 transition-opacity text-blue-600"
+                      onClick={() => (editingCategory === category.id ? handleSave(category.id) : handleEditClick(category))}
+                    >
+                      <FaEdit />
+                    </button>
+                  </div>
                 ))}
               </div>
             </div>
