@@ -116,7 +116,7 @@ function TestList() {
         <div className="mb-1">
           <div
             onClick={() => window.history.back()}
-            className="inline-flex items-center text-blue-600 hover:text-blue-700 transition-colors mb-4"
+            className="inline-flex items-center text-blue-600 hover:text-blue-700 transition-colors mb-4 cursor-pointer"
           >
             <BiLogOutCircle className="w-5 h-5 mr-2" />
             Ortga qaytish
