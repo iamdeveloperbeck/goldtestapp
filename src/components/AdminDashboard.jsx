@@ -97,7 +97,7 @@ function AdminDashboard() {
 
   const exportToPDF = () => {
     const doc = new jsPDF();
-    doc.text("Test topshirganlar hisoboti", 20, 10);
+    doc.text(`${filterCategory}                           ${new Date()}`, 20, 10);
     doc.autoTable({
       head: [['Ism va familiya', 'To\'g\'ri javoblar', 'Noto\'g\'ri javoblar', 'Holat']],
       body: filteredUsers.map(user => [
