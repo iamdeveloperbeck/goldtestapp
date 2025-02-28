@@ -104,7 +104,6 @@ function AdminDashboard() {
     const date = new Date()
     const findCategory = categories?.find(item => item.id === filterCategory)
     doc.text(`${findCategory?.name}`, 20, 10);
-    doc.text(`${formatDate(date)}`, 20, 10);
     doc.autoTable({
       head: [['Ism va familiya', 'To\'g\'ri javoblar', 'Noto\'g\'ri javoblar', 'Holat']],
       body: filteredUsers.map(user => [
@@ -114,6 +113,7 @@ function AdminDashboard() {
         user.passed ? 'O\'tgan' : 'O\'tmagan'
       ]),
     });
+    doc.text(`${formatDate(date)}`, 20, 10);
     doc.save('foydalanuvchilar_hisobi.pdf');
   };
 
