@@ -103,7 +103,7 @@ function AdminDashboard() {
     const doc = new jsPDF();
     const date = new Date()
     const findCategory = categories?.find(item => item.id === filterCategory)
-    doc.text(`${findCategory?.name}       ${formatDate(date)}`, 20, 10);
+    doc.text(`${findCategory?.name} ${formatDate(date)}`, 20, 10);
     doc.autoTable({
       head: [['Ism va familiya', 'To\'g\'ri javoblar', 'Noto\'g\'ri javoblar', 'Holat']],
       body: filteredUsers.map(user => [
