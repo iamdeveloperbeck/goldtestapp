@@ -97,14 +97,16 @@ function AdminDashboard() {
 
   function formatDate(date) {
     return date.toISOString().split('T')[0].replace(/-/g, '.');
-}
+  }
 
   const exportToPDF = () => {
     const doc = new jsPDF();
     const date = new Date()
     const findCategory = categories?.find(item => item.id === filterCategory)
-    doc.text(`${findCategory?.name}   ${formatDate(date)`, 20, 10);
+    doc.text(`Yo'nalish: ${findCategory?.name}`, 15, 10);
+    doc.text(`Test olingan sana: ${formatDate(date)}`, 15, 20);
     doc.autoTable({
+      startY: 25,
       head: [['Ism va familiya', 'To\'g\'ri javoblar', 'Noto\'g\'ri javoblar', 'Holat']],
       body: filteredUsers.map(user => [
         `${user.firstName} ${user.lastName}`,
@@ -113,7 +115,7 @@ function AdminDashboard() {
         user.passed ? 'O\'tgan' : 'O\'tmagan'
       ]),
     });
-    doc.save('foydalanuvchilar_hisobi.pdf');
+    doc.save(`${findCategory?.name}`);
   };
 
   const sortUsersByLastName = () => {
