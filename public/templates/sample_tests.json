@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "question": "O'zbekiston poytaxti qaysi shahar?",
+      "options": ["Toshkent", "Samarqand", "Buxoro", "Xiva"],
+      "correctAnswer": "Toshkent"
+    },
+    {
+      "question": "2 x 2 = ?",
+      "options": ["2", "3", "4", "5"],
+      "correctAnswer": "4"
+    }
+  ]
+}
